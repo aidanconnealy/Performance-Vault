@@ -7,7 +7,6 @@ on:
 
 env:
   AZURE_FUNCTIONAPP_NAME: func-com682-cw2-ac-a01
-  AZURE_FUNCTIONAPP_PACKAGE_PATH: .
 
 jobs:
   build-and-deploy:
@@ -16,12 +15,18 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Create deployment zip (clean)
+        run: |
+          zip -r functionapp.zip . \
+            -x ".git/*" ".github/*" ".vscode/*" \
+               "node_modules/*" "local.settings.json" \
+               "*.mp4" "*.mov" "*.avi" "*.mkv" "*.log"
+
       - name: Deploy
         uses: Azure/functions-action@v1
         with:
           app-name: ${{ env.AZURE_FUNCTIONAPP_NAME }}
-          package: ${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}
+          package: functionapp.zip
           publish-profile: ${{ secrets.AZURE_FUNCTIONAPP_PUBLISH_PROFILE }}
-          respect-funcignore: true
           scm-do-build-during-deployment: true
           enable-oryx-build: true
