@@ -54,3 +54,8 @@ local.settings.json
 .env
 .vscode/
 *.log
+
+*.mp4
+*.mov
+*.avi
+*.mkv
