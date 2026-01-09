@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>PerformanceVault - CW2 Demo UI</title>
+  <link rel="stylesheet" href="./styles.css">
+</head>
+
+<body>
+  <h1>PerformanceVault (CW2 Demo UI)</h1>
+  <p class="sub">
+    Local demo UI for CW2: Azure Function (SAS) + Blob upload + Logic Apps CRUD + Cosmos metadata.
+  </p>
+
+  <!-- ===================== 1) SAS + Upload ===================== -->
+  <fieldset>
+    <legend>1) Request SAS + Upload media to Blob</legend>
+
+    <div class="row">
+      <div>
+        <label for="teamId">Team ID</label>
+        <input id="teamId" value="team-demo" />
+
+        <label for="fileName">Filename (used for naming)</label>
+        <input id="fileName" value="test.mp4" />
+
+        <label for="fileInput">Select file</label>
+        <input id="fileInput" type="file" />
+
+        <div class="btns">
+          <button id="btnRequestSas" class="primary">Request SAS</button>
+          <button id="btnUpload" disabled>Upload to Blob (PUT SAS)</button>
+        </div>
+
+        <p class="hint">
+          Flow: Request SAS → Upload file using returned <code>uploadUrl</code>.
+        </p>
+
+        <span class="pill">Blob container: <strong>media-raw</strong></span>
+      </div>
+
+      <div>
+        <label>SAS response</label>
+        <pre id="sasOut">---</pre>
+      </div>
+    </div>
+  </fieldset>
+
+  <!-- ===================== 2) Create metadata ===================== -->
+  <fieldset>
+    <legend>2) Create metadata (Cosmos DB via Logic App)</legend>
+
+    <div class="row">
+      <div>
+        <label for="athleteName">Athlete name</label>
+        <input id="athleteName" value="Aidan" />
+
+        <label for="liftType">Lift type</label>
+        <select id="liftType">
+          <option>SQUAT</option>
+          <option selected>BENCH</option>
+          <option>DEADLIFT</option>
+        </select>
+
+        <label for="loadKg">Load (kg)</label>
+        <input id="loadKg" value="145" />
+
+        <label for="rpe">RPE (optional)</label>
+        <input id="rpe" value="" />
+
+        <label for="timestamp">Timestamp (ISO)</label>
+        <input id="timestamp" value="2026-01-08T03:00:00Z" />
+
+        <div class="btns">
+          <button id="btnCreateMeta" class="primary">Create metadata (POST)</button>
+        </div>
+
+        <p class="hint">
+          Uses <code>containerName</code> and <code>blobName</code> returned from SAS step.
+        </p>
+
+        <span class="pill">Cosmos DB: <strong>performanceVault / media</strong></span>
+      </div>
+
+      <div>
+        <label>Create response</label>
+        <pre id="createOut">---</pre>
+      </div>
+    </div>
+  </fieldset>
+
+  <!-- ===================== 3) Read / Update / Delete ===================== -->
+  <fieldset>
+    <legend>3) Read / Update / Delete metadata (Logic Apps)</legend>
+
+    <div class="row">
+        <div>
+        <label for="teamIdQuery">Query Team ID (for List / Get / Update / Delete)</label>
+        <input id="teamIdQuery" list="teamOptions" value="team-demo" />
+        <datalist id="teamOptions">
+            <option value="team-demo"></option>
+            <option value="team-001"></option>
+        </datalist>
+
+        <div class="btns">
+            <button id="btnList">List team (GET)</button>
+        </div>
+
+        <label for="docId">Document ID (for Get / Update / Delete)</label>
+        <input id="docId" placeholder="Paste id here (auto-filled after Create)" />
+
+        <div class="btns">
+            <button id="btnGetOne">Get one (GET)</button>
+        </div>
+
+        <label for="updateBody">Update JSON (PUT body)</label>
+        <textarea id="updateBody" rows="5">{ "status": "processed", "rpe": 7 }</textarea>
+
+        <div class="btns">
+            <button id="btnUpdate" class="primary">Update (PUT)</button>
+            <button id="btnDelete">Delete (DELETE)</button>
+        </div>
+
+        <p class="hint">
+            Delete performs: delete blob (if exists) → delete Cosmos doc → returns result.
+        </p>
+
+        <span class="pill">Query scope: <strong>{teamIdQuery}</strong></span>
+        </div>
+
+        <div>
+        <label>Output</label>
+        <pre id="crudOut">---</pre>
+        </div>
+    </div>
+    </fieldset>
+
+
+  <!-- Scripts -->
+  <script src="./config.js"></script>
+  <script src="./app.js"></script>
+</body>
+</html>
